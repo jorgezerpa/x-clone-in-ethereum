@@ -21,7 +21,7 @@ contract X {
     }
 
     mapping(address => Post[]) public posts;
-    address[] censored_accounts;
+    mapping(address => bool) private censored_accounts;
 
     function create_post(string calldata _post) is_not_censored_account public {
         require(bytes(_post).length<MAX_POST_LENGTH, "Post is to long.");
@@ -43,17 +43,13 @@ contract X {
     }
 
     function add_censored_account(address _address) public {
-        censored_accounts.push(_address);
+        censored_accounts[_address] = true;
     }
 
     //Modifiers
     modifier is_not_censored_account () {
-        for(uint256 i = 0; i < censored_accounts.length; i++) {
-            require(msg.sender!=censored_accounts[i], "This account is censored");
-        }
+        require(!censored_accounts[msg.sender], "This account is censored");
         _;
     }
-
-
 
 }
