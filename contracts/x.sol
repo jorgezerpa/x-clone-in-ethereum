@@ -11,8 +11,6 @@ contract X {
 
     uint16 constant MAX_POST_LENGTH = 256;
 
-    
-
     struct Post {
         address autor;
         string content;
@@ -22,6 +20,12 @@ contract X {
 
     mapping(address => Post[]) public posts;
     mapping(address => bool) private censored_accounts;
+
+    address private owner;
+
+    constructor () {
+        owner = msg.sender;
+    }
 
     function create_post(string calldata _post) is_not_censored_account public {
         require(bytes(_post).length<MAX_POST_LENGTH, "Post is to long.");
@@ -43,6 +47,7 @@ contract X {
     }
 
     function add_censored_account(address _address) public {
+        require(msg.sender == owner, "This function is just for owners");
         censored_accounts[_address] = true;
     }
 
