@@ -7,6 +7,8 @@ pragma solidity ^0.8.27;
 
 contract X {
 
+    uint16 constant MAX_POST_LENGTH = 256;
+
     struct Post {
         address autor;
         string content;
@@ -17,6 +19,8 @@ contract X {
     mapping(address => Post[]) public posts;
 
     function create_post(string calldata _post) public {
+        require(bytes(_post).length<MAX_POST_LENGTH, "Post is to long.");
+
         posts[msg.sender].push(Post({
             autor: msg.sender,
             content: _post,
