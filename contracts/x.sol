@@ -50,6 +50,11 @@ contract X {
         require(msg.sender == owner, "This function is just for owners");
         censored_accounts[_address] = true;
     }
+    
+    function remove_censored_account(address _address) public {
+        require(msg.sender == owner, "This function is just for owners");
+        delete censored_accounts[_address];
+    }
 
     //Modifiers
     modifier is_not_censored_account () {

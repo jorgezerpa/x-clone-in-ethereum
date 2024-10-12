@@ -63,9 +63,20 @@ describe("X", function () {
       
       const postsOfNotCensuredUser = await contract.get_all_posts(owner)
       expect(postsOfNotCensuredUser.length===0, "Should be able to interact with contract if the caller is not censured")
-
+      
       await expect(contract.connect(accountToCensure).get_all_posts(accountToCensure), `Account ${accountToCensure.address} is censured. Should revert`).to.be.revertedWith('This account is censored')
       await expect(contract.connect(accountToCensure).get_all_posts(accountToCensure), `Account ${accountToCensure2.address} is censured. Should revert`).to.be.revertedWith('This account is censored')
+    })
+    
+    it("Should remove censored accounts", async()=>{
+      const contract = await loadFixture(deployContract)
+      const [_, accountToCensure] = await hre.ethers.getSigners()
+      
+      await contract.add_censored_account(accountToCensure)
+      await expect(contract.connect(accountToCensure).get_all_posts(accountToCensure), `Account ${accountToCensure.address} is censured. Should revert`).to.be.revertedWith('This account is censored')
+      await contract.remove_censored_account(accountToCensure)
+      const postsAfterRemoveCensures = await contract.connect(accountToCensure).get_all_posts(accountToCensure)
+      expect(postsAfterRemoveCensures.length===0, "Should be able to interact with contract if the owner removes the censure")
     })
   
 
