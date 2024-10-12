@@ -46,19 +46,22 @@ contract X {
         return posts[_owner];
     }
 
-    function add_censored_account(address _address) public {
-        require(msg.sender == owner, "This function is just for owners");
+    function add_censored_account(address _address) just_for_owner public {
         censored_accounts[_address] = true;
     }
     
-    function remove_censored_account(address _address) public {
-        require(msg.sender == owner, "This function is just for owners");
+    function remove_censored_account(address _address) just_for_owner public {
         delete censored_accounts[_address];
     }
 
     //Modifiers
     modifier is_not_censored_account () {
         require(!censored_accounts[msg.sender], "This account is censored");
+        _;
+    }
+
+    modifier just_for_owner () {
+        require(msg.sender == owner, "This function is just for owners");
         _;
     }
 
