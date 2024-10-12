@@ -78,8 +78,25 @@ describe("X", function () {
       const postsAfterRemoveCensures = await contract.connect(accountToCensure).get_all_posts(accountToCensure)
       expect(postsAfterRemoveCensures.length===0, "Should be able to interact with contract if the owner removes the censure")
     })
-  
 
   });
+
+  describe("likes", ()=>{
+    it("should like adn dislike", async()=>{
+      const contract = await loadFixture(deployContract)
+      const [_, account] = await hre.ethers.getSigners()
+      
+      const post_to_test = "This is Chanchito Feliz reporting from my first post yeahhh!!!!"
+      
+      await contract.connect(account).create_post(post_to_test)
+      const post = await contract.connect(account).get_post(account, 0)
+      expect(Number(post.likes)==0, "number of likes should be 0 initially")
+      await contract.like_post(account, 0)
+      expect(Number(post.likes)==1, "post should received a like")
+      await contract.unlike_post(account, 0)
+      expect(Number(post.likes)==0, "post likes should be subtracted")
+    })
+
+  })
 
 });
