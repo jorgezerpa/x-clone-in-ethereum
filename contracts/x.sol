@@ -12,6 +12,7 @@ contract X {
     uint16 constant MAX_POST_LENGTH = 256;
 
     struct Post {
+        uint256 id;
         address autor;
         string content;
         uint256 timestamp; 
@@ -31,6 +32,7 @@ contract X {
         require(bytes(_post).length<MAX_POST_LENGTH, "Post is to long.");
 
         posts[msg.sender].push(Post({
+            id: posts[msg.sender].length,
             autor: msg.sender,
             content: _post,
             timestamp: block.timestamp,
@@ -44,6 +46,17 @@ contract X {
 
     function get_all_posts(address _owner) is_not_censored_account view public returns (Post[] memory) {
         return posts[_owner];
+    }
+
+    function like_post(address autor, uint256 post_id) external  {
+        require(posts[autor][post_id].id == post_id, "Post does not exist");
+        posts[autor][post_id].likes++;
+    }
+
+    function unlike_post(address autor, uint256 post_id) external  {
+        require(posts[autor][post_id].id == post_id, "Post does not exist");
+        require(posts[autor][post_id].likes>0, "Post does not exist");
+        posts[autor][post_id].likes--;
     }
 
     function add_censored_account(address _address) just_for_owner public {
