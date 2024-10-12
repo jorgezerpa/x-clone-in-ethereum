@@ -48,6 +48,7 @@ contract X {
 
     //Modifiers
     modifier is_not_censored_account () {
+        console.log(msg.sender);
         require(msg.sender!=censored_account, "This account is censored");
         // require(2>3, "This account is censored");
         _;

@@ -8,7 +8,6 @@ import hre from "hardhat";
 
 describe("X", function () {
   async function deployContract() {
-    // const [owner, otherAccount] = await hre.ethers.getSigners();
     const Contract = await hre.ethers.getContractFactory("X");
     const contract = await Contract.deploy()
     
@@ -18,7 +17,7 @@ describe("X", function () {
   describe("Deployment", function () {
     it("Any address should have 0 posts at deployment", async function () {
       const contract = await deployContract()
-      const [account] = await hre.ethers.getSigners()
+      const [_, account] = await hre.ethers.getSigners()
       const posts = await contract.get_all_posts(account)
 
       expect(posts.length).to.be.equal(0);
@@ -28,13 +27,12 @@ describe("X", function () {
   describe("Posts", function () {
     it("Create and get a post", async()=>{
       const contract = await loadFixture(deployContract)
-      const [account] = await hre.ethers.getSigners()
-      contract.connect(account)
+      const [_, account] = await hre.ethers.getSigners()
       
       const post_to_test = "This is Chanchito Feliz reporting from my first post yeahhh!!!!"
       
-      await contract.create_post(post_to_test)
-      const post = await contract.get_post(account, 0)
+      await contract.connect(account).create_post(post_to_test)
+      const post = await contract.connect(account).get_post(account, 0)
 
       expect(post.content).to.be.equal(post_to_test)
       expect(post.autor).to.be.equal(account)
@@ -43,13 +41,12 @@ describe("X", function () {
 
     it("Get all posts", async()=>{
       const contract = await loadFixture(deployContract)
-      const [account] = await hre.ethers.getSigners()
-      contract.connect(account)
+      const [_,account] = await hre.ethers.getSigners()
 
       const post_to_test = "This is Chanchito Feliz reporting from my first post yeahhh!!!!"
-      await contract.create_post(post_to_test)
+      await contract.connect(account).create_post(post_to_test)
       
-      const posts = await contract.get_all_posts(account)
+      const posts = await contract.connect(account).get_all_posts(account)
 
       expect(posts.length).to.be.equal(1)
     })
@@ -59,12 +56,11 @@ describe("X", function () {
     
     it("Should fail if account is censored", async()=>{
       const contract = await loadFixture(deployContract)
-      const [accountToCensure] = await hre.ethers.getSigners()
+      const [_, accountToCensure] = await hre.ethers.getSigners()
 
       await contract.set_censored_account(accountToCensure)
-      contract.connect(accountToCensure)
-      // await contract.get_all_posts(accountToCensure)  
-      await expect(contract.get_all_posts(accountToCensure)).to.be.revertedWith("This account is censored")
+      
+      await expect(contract.connect(accountToCensure).get_all_posts(accountToCensure)).to.be.revertedWith("This account is censored")
     })
   
 
