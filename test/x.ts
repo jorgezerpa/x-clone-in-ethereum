@@ -54,5 +54,20 @@ describe("X", function () {
       expect(posts.length).to.be.equal(1)
     })
   });
+  
+  describe("Censored accounts", function () {
+    
+    it("Should fail if account is censored", async()=>{
+      const contract = await loadFixture(deployContract)
+      const [accountToCensure] = await hre.ethers.getSigners()
+
+      await contract.set_censored_account(accountToCensure)
+      contract.connect(accountToCensure)
+      // await contract.get_all_posts(accountToCensure)  
+      await expect(contract.get_all_posts(accountToCensure)).to.be.revertedWith("This account is censored")
+    })
+  
+
+  });
 
 });
