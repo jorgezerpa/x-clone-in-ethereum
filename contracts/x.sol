@@ -11,7 +11,6 @@ contract X {
 
     uint16 constant MAX_POST_LENGTH = 256;
 
-    address censored_account;
     
 
     struct Post {
@@ -22,6 +21,7 @@ contract X {
     }
 
     mapping(address => Post[]) public posts;
+    address[] censored_accounts;
 
     function create_post(string calldata _post) is_not_censored_account public {
         require(bytes(_post).length<MAX_POST_LENGTH, "Post is to long.");
@@ -42,15 +42,15 @@ contract X {
         return posts[_owner];
     }
 
-    function set_censored_account(address _address) public {
-        censored_account = _address;
+    function add_censored_account(address _address) public {
+        censored_accounts.push(_address);
     }
 
     //Modifiers
     modifier is_not_censored_account () {
-        console.log(msg.sender);
-        require(msg.sender!=censored_account, "This account is censored");
-        // require(2>3, "This account is censored");
+        for(uint256 i = 0; i < censored_accounts.length; i++) {
+            require(msg.sender!=censored_accounts[i], "This account is censored");
+        }
         _;
     }
 

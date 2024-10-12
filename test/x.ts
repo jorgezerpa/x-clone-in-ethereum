@@ -56,11 +56,16 @@ describe("X", function () {
     
     it("Should fail if account is censored", async()=>{
       const contract = await loadFixture(deployContract)
-      const [_, accountToCensure] = await hre.ethers.getSigners()
+      const [owner, accountToCensure, accountToCensure2] = await hre.ethers.getSigners()
 
-      await contract.set_censored_account(accountToCensure)
+      await contract.add_censored_account(accountToCensure)
+      await contract.add_censored_account(accountToCensure2)
       
-      await expect(contract.connect(accountToCensure).get_all_posts(accountToCensure)).to.be.revertedWith("This account is censored")
+      const postsOfNotCensuredUser = await contract.get_all_posts(owner)
+      expect(postsOfNotCensuredUser.length===0, "Should be able to interact with contract if the caller is not censured")
+
+      await expect(contract.connect(accountToCensure).get_all_posts(accountToCensure), `Account ${accountToCensure.address} is censured. Should revert`).to.be.revertedWith('This account is censored')
+      await expect(contract.connect(accountToCensure).get_all_posts(accountToCensure), `Account ${accountToCensure2.address} is censured. Should revert`).to.be.revertedWith('This account is censored')
     })
   
 
