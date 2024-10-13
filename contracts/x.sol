@@ -28,6 +28,8 @@ contract X {
         owner = msg.sender;
     }
 
+    event newPostCreated(address indexed user, string post);
+
     function create_post(string calldata _post) is_not_censored_account public {
         require(bytes(_post).length<MAX_POST_LENGTH, "Post is to long.");
 
@@ -38,6 +40,8 @@ contract X {
             timestamp: block.timestamp,
             likes: 0
         }));
+
+        emit newPostCreated(msg.sender, _post);
     }
 
     function get_post(address _owner, uint _i) is_not_censored_account view public returns (Post memory) {
