@@ -29,6 +29,7 @@ contract X {
     }
 
     event newPostCreated(address indexed user, string post);
+    event postLiked(address indexed user, uint256 post_id);
 
     function create_post(string calldata _post) is_not_censored_account public {
         require(bytes(_post).length<MAX_POST_LENGTH, "Post is to long.");
@@ -55,6 +56,7 @@ contract X {
     function like_post(address autor, uint256 post_id) external  {
         require(posts[autor][post_id].id == post_id, "Post does not exist");
         posts[autor][post_id].likes++;
+        emit postLiked(msg.sender, post_id);
     }
 
     function unlike_post(address autor, uint256 post_id) external  {
