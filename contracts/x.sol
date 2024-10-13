@@ -29,7 +29,7 @@ contract X {
     }
 
     event newPostCreated(address indexed user, string post);
-    event postLiked(address indexed user, uint256 post_id);
+    event postLiked(address indexed liker, uint256 post_id);
 
     function create_post(string calldata _post) is_not_censored_account public {
         require(bytes(_post).length<MAX_POST_LENGTH, "Post is to long.");

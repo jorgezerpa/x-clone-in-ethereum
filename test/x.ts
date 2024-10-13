@@ -108,6 +108,16 @@ describe("X", function () {
         .emit(contract, "newPostCreated")
         .withArgs(sender, post)
     })
+    it("should emit postLiked event", async()=>{
+      const contract = await loadFixture(deployContract)
+      const [autor, liker] = await hre.ethers.getSigners()
+      const post = "This is the post"
+      await contract.connect(autor).create_post(post)
+      await expect(contract.connect(liker).like_post(autor, 0))
+      .to
+      .emit(contract, "postLiked")
+      .withArgs(liker, 0)
+    })
   })
 
 });
