@@ -96,7 +96,18 @@ describe("X", function () {
       await contract.unlike_post(account, 0)
       expect(Number(post.likes)==0, "post likes should be subtracted")
     })
-
+  })
+  
+  describe("events", ()=>{
+    it("should emit newPostCreated event", async()=>{
+      const contract = await loadFixture(deployContract)
+      const [sender] = await hre.ethers.getSigners()
+      const post = "This is the post"
+      await expect(contract.create_post(post))
+        .to
+        .emit(contract, "newPostCreated")
+        .withArgs(sender, post)
+    })
   })
 
 });
