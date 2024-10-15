@@ -6,8 +6,9 @@ pragma solidity ^0.8.27;
 // 3. Create a function to posts
 
 import "hardhat/console.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract X {
+contract X is Ownable {
 
     uint16 constant MAX_POST_LENGTH = 256;
 
@@ -22,14 +23,13 @@ contract X {
     mapping(address => Post[]) public posts;
     mapping(address => bool) private censored_accounts;
 
-    address private owner;
-
-    constructor () {
-        owner = msg.sender;
-    }
 
     event newPostCreated(address indexed user, string post);
     event postLiked(address indexed liker, uint256 post_id);
+
+    constructor() Ownable(msg.sender) {
+
+    }
 
     function create_post(string calldata _post) is_not_censored_account public {
         require(bytes(_post).length<MAX_POST_LENGTH, "Post is to long.");
@@ -65,11 +65,11 @@ contract X {
         posts[autor][post_id].likes--;
     }
 
-    function add_censored_account(address _address) just_for_owner public {
+    function add_censored_account(address _address) onlyOwner public {
         censored_accounts[_address] = true;
     }
     
-    function remove_censored_account(address _address) just_for_owner public {
+    function remove_censored_account(address _address) onlyOwner public {
         delete censored_accounts[_address];
     }
 
@@ -79,9 +79,6 @@ contract X {
         _;
     }
 
-    modifier just_for_owner () {
-        require(msg.sender == owner, "This function is just for owners");
-        _;
-    }
+    
 
 }

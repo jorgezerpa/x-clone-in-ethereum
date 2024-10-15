@@ -79,6 +79,13 @@ describe("X", function () {
       expect(postsAfterRemoveCensures.length===0, "Should be able to interact with contract if the owner removes the censure")
     })
 
+    it("Should fail when other than the owner trie sto modify censures", async()=>{
+      const contract = await loadFixture(deployContract)
+      const [toCensure, notOwner] = await hre.ethers.getSigners()
+
+expect(contract.connect(notOwner).add_censored_account(toCensure)).to.be.revertedWithCustomError
+    })
+
   });
 
   describe("likes", ()=>{
